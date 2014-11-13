@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BuilderExtensions.cs" />
-    <Compile Include="ComponentContextExtensions.cs" />
+    <Compile Include="LifetimeScopeExtensions.cs" />
     <Compile Include="IHandleEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventService.cs" />

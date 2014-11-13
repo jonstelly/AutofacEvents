@@ -6,16 +6,16 @@ namespace Autofac.Events
 {
     public class EventService : IEventService
     {
-        public EventService(IComponentContext context)
+        public EventService(ILifetimeScope scope)
         {
-            _Context = context;
+            _scope = scope;
         }
 
-        private readonly IComponentContext _Context;
+        private readonly ILifetimeScope _scope;
 
         public void Publish(object @event)
         {
-            _Context.PublishEvent(@event);
+            _scope.PublishEvent(@event);
         }
     }
 }
