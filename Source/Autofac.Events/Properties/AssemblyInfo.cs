@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Autofac.Events")]
-[assembly: AssemblyDescription("Autofac Events extension")]
+[assembly: AssemblyDescription("Autofac Events extension to support pub/sub and domain events")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jon Stelly")]
 [assembly: AssemblyProduct("Autofac.Events")]
@@ -28,4 +28,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.1.*")]
 [assembly: AssemblyFileVersion("0.1.0.*")]
-[assembly: AssemblyInformationalVersion("0.1.2-alpha")]
+[assembly: AssemblyInformationalVersion("0.1.3-alpha")]
