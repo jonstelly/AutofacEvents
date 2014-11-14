@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Autofac.Events
 {
-    public class EventService : IEventService
+    public class EventPublisher : IEventPublisher
     {
-        public EventService(ILifetimeScope scope)
+        public EventPublisher(ILifetimeScope scope)
         {
             _scope = scope;
         }

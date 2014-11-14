@@ -11,9 +11,9 @@ namespace Autofac
 {
     public static class BuilderExtensions
     {
-        public static IRegistrationBuilder<EventService, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterEventing(this ContainerBuilder builder)
+        public static IRegistrationBuilder<EventPublisher, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterEventing(this ContainerBuilder builder)
         {
-            return builder.RegisterType<EventService>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
+            return builder.RegisterType<EventPublisher>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
         }
     }
 }

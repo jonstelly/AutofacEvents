@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Autofac.Events
 {
-    public interface IEventService
+    public interface IEventPublisher
     {
         void Publish(object @event);
     }

@@ -60,6 +60,8 @@
     <Compile Include="IEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleEvent.cs" />
+    <Compile Include="Tests\EventPublisherTests.cs" />
+    <Compile Include="Tests\InfrastructureEventHandler.cs" />
     <Compile Include="Tests\InfrastructureEventTests.cs" />
     <Compile Include="Tests\PersonEventTests.cs" />
     <Compile Include="Tests\TestHandler.cs" />

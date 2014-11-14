@@ -23,9 +23,5 @@ namespace Autofac.Events.Tests
                 Assert.Equal(@event, handler.LastEvent);
             }
         }
-
-        public class InfrastructureEventHandler : TestHandler<InfrastructureEvent>
-        {
-        }
     }
 }
