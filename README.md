@@ -3,7 +3,7 @@ AutofacEvents
 AutofacEvents is an event pub/sub extension for Autofac.  Primary usage is to publish domain events between classes, where subscribing to the events is as easy as implementing an interface in any interested classes and ensuring that they are registered with Autofac.
 
 ##Configuration
-Configuration is simple, during your normal autofac configuration, register the ContravariantRegistrationSource, and call RegisterEventing().
+During your normal autofac configuration, register the ContravariantRegistrationSource, and call RegisterEventing().
 
 ```csharp
 var builder = new ContainerBuilder();
@@ -12,7 +12,7 @@ builder.RegisterEventing();
 ```
 
 ##Publishing
-Publishing is simple and there are two options.  Option one is to call the PublishEvent() extension method off of ILifetimeScope.  For those that would prefer not to have to add a dependency to ILifetimeScope to publish, there's also an IEventPublisher interface that has a simple Publish method.  Personally I prefer to use the IEventPublisher because a dependency on the IEventPublisher makes it clear what your class intends to use the dependency for, while a dependency on ILifetimeScope is less clear.
+There are two options for publishing.  Option one is to call the PublishEvent() extension method off of ILifetimeScope.  For those that would prefer not to have to add a dependency to ILifetimeScope to publish, there's also an IEventPublisher interface that has a simple Publish method.  Personally I prefer to use the IEventPublisher because a dependency on the IEventPublisher makes it clear what your class intends to use the dependency for, while a dependency on ILifetimeScope is less clear.
 
 ```csharp
 public class SomeMessage
@@ -53,4 +53,8 @@ public class WorkListener : IHandleEvent<SomeMessage>
 }
 ```
 
-Configuring the ContravariantRegistrationSource initially means that if we implement IHandleEvent<object>, we would get all events of any type.  You can also have your event types implement interfaces and subscribe to the interfaces.
+Configuring the ContravariantRegistrationSource initially means that if we implement
+```csharp
+IHandleEvent<object>
+```
+then we would get all events of any type.  You can also have your event types implement interfaces and subscribe to those interfaces.
