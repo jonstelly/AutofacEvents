@@ -10,11 +10,8 @@
     <projectUrl>https://github.com/jonstelly/AutofacEvents</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>NuGet Package Cleanup, Project URL</releaseNotes>
+    <releaseNotes>Improved error handling</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Autofac Domain Events</tags>
   </metadata>
-  <!--<files>
-    <file src="bin\$configuration$\Autofac.Events.dll" target="lib\portable-windows8+net45+wpa"/>    
-  </files>-->
 </package>

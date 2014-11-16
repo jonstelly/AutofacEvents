@@ -13,10 +13,20 @@ namespace Autofac
     {
         public static void PublishEvent(this ILifetimeScope scope, object @event)
         {
+            var exceptions = new List<Exception>();
             foreach (dynamic handler in scope.ResolveHandlers(@event))
             {
-                handler.Handle((dynamic)@event);
-            }            
+                try
+                {
+                    handler.Handle((dynamic)@event);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
         }
 
         public static IEnumerable<dynamic> ResolveHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)

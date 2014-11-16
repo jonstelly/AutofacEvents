@@ -9,7 +9,7 @@ namespace Autofac.Events.Tests
 {
     public abstract class UnitTests
     {
-        public ILifetimeScope BeginScope()
+        public ILifetimeScope BeginScope(Action<ContainerBuilder> additionalConfig = null)
         {
             var builder = new ContainerBuilder();
             builder.RegisterSource(new ContravariantRegistrationSource());
@@ -19,6 +19,8 @@ namespace Autofac.Events.Tests
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
+            if (additionalConfig != null)
+                additionalConfig(builder);
             return builder.Build();
         }
     }
