@@ -2,7 +2,7 @@
 
 namespace Autofac.Events
 {
-    public class AsyncEventPublisher
+    public class AsyncEventPublisher : IAsyncEventPublisher
     {
         public AsyncEventPublisher(ILifetimeScope scope)
         {
