@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Autofac.Events;
 
@@ -11,6 +10,8 @@ namespace Autofac
 {
     public static class LifetimeScopeExtensions
     {
+        #region Regular Eventing
+
         public static void PublishEvent(this ILifetimeScope scope, object @event)
         {
             var exceptions = new List<Exception>();
@@ -50,5 +51,51 @@ namespace Autofac
         {
             return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleEvent<>).MakeGenericType(type));
         }
+
+        #endregion
+
+        #region Async Eventing
+
+        public static async Task PublishAsyncEvent(this ILifetimeScope scope, object @event)
+        {
+            var exceptions = new List<Exception>();
+            foreach (dynamic handler in scope.ResolveAsyncHandlers(@event))
+            {
+                try
+                {
+                    await (Task)handler.HandleAsync((dynamic)@event);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
+        }
+
+        public static IEnumerable<dynamic> ResolveAsyncHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
+        {
+            var eventType = @event.GetType();
+            return scope.ResolveConcreteAsyncHandlers(eventType)
+                .Union(scope.ResolveInterfaceAsyncHandlers(eventType));
+        }
+
+        private static IEnumerable<dynamic> ResolveConcreteAsyncHandlers(this ILifetimeScope scope, Type eventType)
+        {
+            return (IEnumerable<dynamic>)scope.Resolve(MakeAsyncHandlerType(eventType));
+        }
+
+        private static IEnumerable<dynamic> ResolveInterfaceAsyncHandlers(this ILifetimeScope scope, Type eventType)
+        {
+            return eventType.GetTypeInfo().ImplementedInterfaces.SelectMany(i => (IEnumerable<dynamic>)scope.Resolve(MakeAsyncHandlerType(i))).Distinct();
+        }
+
+        private static Type MakeAsyncHandlerType(Type type)
+        {
+            return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleEvent<>).MakeGenericType(type));
+        }
+
+        #endregion
     }
 }

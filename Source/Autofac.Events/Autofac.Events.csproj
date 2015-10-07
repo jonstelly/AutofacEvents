@@ -40,7 +40,9 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AsyncEventPublisher.cs" />
     <Compile Include="BuilderExtensions.cs" />
+    <Compile Include="IHandleAsyncEvent.cs" />
     <Compile Include="LifetimeScopeExtensions.cs" />
     <Compile Include="IHandleEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

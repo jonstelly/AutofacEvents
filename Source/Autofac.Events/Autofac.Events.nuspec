@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/jonstelly/AutofacEvents</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Improved error handling</releaseNotes>
+    <releaseNotes>Added async Tasks events handling</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Autofac Domain Events</tags>
   </metadata>

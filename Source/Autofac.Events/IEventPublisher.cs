@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Autofac.Events
+﻿namespace Autofac.Events
 {
     public interface IEventPublisher
     {

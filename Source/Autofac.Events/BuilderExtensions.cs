@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac.Builder;
+﻿using Autofac.Builder;
 using Autofac.Events;
 
 // ReSharper disable once CheckNamespace
@@ -14,6 +9,11 @@ namespace Autofac
         public static IRegistrationBuilder<EventPublisher, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterEventing(this ContainerBuilder builder)
         {
             return builder.RegisterType<EventPublisher>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
+        }
+
+        public static IRegistrationBuilder<AsyncEventPublisher, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterAsyncEventing(this ContainerBuilder builder)
+        {
+            return builder.RegisterType<AsyncEventPublisher>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
         }
     }
 }
