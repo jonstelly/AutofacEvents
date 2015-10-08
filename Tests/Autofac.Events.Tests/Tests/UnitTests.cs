@@ -14,6 +14,7 @@ namespace Autofac.Events.Tests
             var builder = new ContainerBuilder();
             builder.RegisterSource(new ContravariantRegistrationSource());
             builder.RegisterEventing();
+            builder.RegisterAsyncEventing();
             builder.RegisterInstance(this).AsSelf().AsImplementedInterfaces();
             builder.RegisterAssemblyTypes(typeof(IHandleEvent<>).Assembly, GetType().Assembly)
                 .AsSelf()

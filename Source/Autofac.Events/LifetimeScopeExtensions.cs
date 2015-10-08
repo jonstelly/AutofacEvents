@@ -93,7 +93,7 @@ namespace Autofac
 
         private static Type MakeAsyncHandlerType(Type type)
         {
-            return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleEvent<>).MakeGenericType(type));
+            return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleAsyncEvent<>).MakeGenericType(type));
         }
 
         #endregion

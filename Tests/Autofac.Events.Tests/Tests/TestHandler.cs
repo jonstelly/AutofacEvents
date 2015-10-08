@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Autofac.Events.Tests
 {
-    public abstract class TestHandler<TEvent> : IHandleEvent<TEvent>
+    public abstract class TestHandler<TEvent> : IHandleEvent<TEvent>, IHandleAsyncEvent<TEvent>
     {
         protected TestHandler()
         {
@@ -19,6 +19,12 @@ namespace Autofac.Events.Tests
         public void Handle(TEvent @event)
         {
             Events.Add(@event);
+        }
+
+        public Task HandleAsync(TEvent @event)
+        {
+            Events.Add(@event);
+            return Task.Delay(0);
         }
     }
 }
