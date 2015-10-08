@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>Autofac.Events</id>
+    <version>3.5.2.2</version>
+    <title>Autofac.Events</title>
+    <authors>Jon Stelly</authors>
+    <owners>Jon Stelly</owners>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <projectUrl>https://github.com/jonstelly/AutofacEvents</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Added async Tasks events handling</releaseNotes>
+    <description>Autofac Events extension to support pub/sub and domain events</description>
+    <releaseNotes>switched to .NET 4.5.1 and ConfigureAwait(false)</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Autofac Domain Events</tags>
   </metadata>

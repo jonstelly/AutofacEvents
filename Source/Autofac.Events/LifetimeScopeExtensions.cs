@@ -63,7 +63,7 @@ namespace Autofac
             {
                 try
                 {
-                    await (Task)handler.HandleAsync((dynamic)@event);
+                    await ((Task)handler.HandleAsync((dynamic)@event)).ConfigureAwait(false);
                 }
                 catch (Exception exception)
                 {
