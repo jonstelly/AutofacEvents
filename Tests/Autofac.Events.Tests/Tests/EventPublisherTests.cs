@@ -40,7 +40,22 @@ namespace Autofac.Events.Tests
                 Assert.True(exception.InnerExceptions[0].Message.StartsWith("Intentional error for "));
             }
         }
-
+        
+        [Fact]
+        public void ThrowingAsyncHandlerThrowsAndAllHandlersAreCalled()
+        {
+            using (var scope = BeginScope())
+            {
+                var thrower = scope.Resolve<ThrowingThrowEventHandler>();
+                var handler = scope.Resolve<NonThrowingThrowEventAsyncHandler>();
+                var exception = Assert.Throws<AggregateException>(() => scope.PublishEvent(new ThrowAsyncEvent()));
+                Assert.Equal(1, handler.Events.Count);
+                Assert.True(thrower.ThrewException);
+                Assert.Equal(1, exception.InnerExceptions.Count);
+                Assert.True(exception.InnerExceptions[0].Message.StartsWith("Intentional error for "));
+            }
+        }
+        
     }
 }
 

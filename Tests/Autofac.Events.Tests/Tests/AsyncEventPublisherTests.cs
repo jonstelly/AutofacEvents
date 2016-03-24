@@ -16,15 +16,39 @@ namespace Autofac.Events.Tests
             {
                 var start = new StartEvent();
                 var stop = new StopEvent();
-                var pub = scope.Resolve<IAsyncEventPublisher>();
+                var pub = scope.Resolve<EventPublisher>();
                 var handler = scope.Resolve<InfrastructureEventHandler>();
+                var asyncHandler = scope.Resolve<InfrastructureAsyncEventHandler>();
                 Assert.Equal(0, handler.Events.Count);
-                await pub.Publish(start);
-                await pub.Publish(stop);
+                Assert.Equal(0, asyncHandler.Events.Count);
+                await pub.PublishAsync(start);
+                await pub.PublishAsync(stop);
                 
                 Assert.Equal(2, handler.Events.Count);
                 Assert.Equal(start, handler.Events[0]);
                 Assert.Equal(stop, handler.Events[1]);
+                Assert.Equal(2, asyncHandler.Events.Count);
+                Assert.Equal(start, asyncHandler.Events[0]);
+                Assert.Equal(stop, asyncHandler.Events[1]);
+            }
+        }
+
+        [Fact]
+        public void EventPublisherPublishesAsyncHandlerHandles()
+        {
+            using (var scope = BeginScope())
+            {
+                var start = new StartEvent();
+                var stop = new StopEvent();
+                var pub = scope.Resolve<EventPublisher>();
+                var asyncHandler = scope.Resolve<InfrastructureAsyncEventHandler>();
+                Assert.Equal(0, asyncHandler.Events.Count);
+                pub.Publish(start);
+                pub.Publish(stop);
+
+                Assert.Equal(2, asyncHandler.Events.Count);
+                Assert.Equal(start, asyncHandler.Events[0]);
+                Assert.Equal(stop, asyncHandler.Events[1]);
             }
         }
     }

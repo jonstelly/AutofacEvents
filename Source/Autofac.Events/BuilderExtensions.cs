@@ -10,10 +10,5 @@ namespace Autofac
         {
             return builder.RegisterType<EventPublisher>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
         }
-
-        public static IRegistrationBuilder<AsyncEventPublisher, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterAsyncEventing(this ContainerBuilder builder)
-        {
-            return builder.RegisterType<AsyncEventPublisher>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
-        }
     }
 }

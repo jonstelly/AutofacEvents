@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Autofac.Events.Tests
 {
-    public abstract class TestHandler<TEvent> : IHandleEvent<TEvent>
+    public class TestAsyncHandler<TEvent> : IHandleAsyncEvent<TEvent>
     {
-        protected TestHandler()
+        protected TestAsyncHandler()
         {
             Events = new List<TEvent>();
         }
@@ -16,9 +16,11 @@ namespace Autofac.Events.Tests
         public List<TEvent> Events { get; private set; }
         public TEvent LastEvent { get { return Events.LastOrDefault(); } }
 
-        public void Handle(TEvent @event)
+
+        public Task HandleAsync(TEvent @event)
         {
             Events.Add(@event);
+            return Task.FromResult((object) null);
         }
     }
 }

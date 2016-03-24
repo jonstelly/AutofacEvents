@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Autofac.Events
 {
-    public interface IAsyncEventPublisher
+    public class ThrowAsyncEvent
     {
-        Task Publish(object @event);
     }
 }

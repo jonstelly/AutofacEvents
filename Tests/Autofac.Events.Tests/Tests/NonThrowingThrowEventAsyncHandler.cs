@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Autofac.Events.Tests
 {
-    public class NonThrowingThrowEventAsyncHandler : TestHandler<ThrowAsyncEvent>
+    public class NonThrowingThrowEventHandler : TestHandler<ThrowEvent>
     {
     }
 }

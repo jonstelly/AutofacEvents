@@ -1,4 +1,6 @@
-﻿namespace Autofac.Events
+﻿using System.Threading.Tasks;
+
+namespace Autofac.Events
 {
     public class EventPublisher : IEventPublisher
     {
@@ -12,6 +14,11 @@
         public void Publish(object @event)
         {
             _scope.PublishEvent(@event);
+        }
+
+        public Task PublishAsync(object @event)
+        {
+            return _scope.PublishAsyncEvent(@event);
         }
     }
 }

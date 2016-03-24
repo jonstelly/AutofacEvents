@@ -26,6 +26,22 @@ namespace Autofac
                     exceptions.Add(exception);
                 }
             }
+            foreach (dynamic handler in scope.ResolveAsyncHandlers(@event))
+            {
+                try
+                {
+                    var task = (Task) handler.HandleAsync((dynamic) @event);
+                    task.Wait();
+                    if (task.Exception != null)
+                    {
+                        exceptions.AddRange(task.Exception.InnerExceptions);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
             if (exceptions.Count > 0)
                 throw new AggregateException(exceptions);
         }
@@ -59,6 +75,17 @@ namespace Autofac
         public static async Task PublishAsyncEvent(this ILifetimeScope scope, object @event)
         {
             var exceptions = new List<Exception>();
+            foreach (dynamic handler in scope.ResolveHandlers(@event))
+            {
+                try
+                {
+                    handler.Handle((dynamic)@event);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
             foreach (dynamic handler in scope.ResolveAsyncHandlers(@event))
             {
                 try
