@@ -16,7 +16,7 @@ namespace Autofac.Events.Tests
             {
                 var start = new StartEvent();
                 var stop = new StopEvent();
-                var pub = scope.Resolve<EventPublisher>();
+                var pub = scope.Resolve<IEventPublisher>();
                 var handler = scope.Resolve<InfrastructureEventHandler>();
                 var asyncHandler = scope.Resolve<InfrastructureAsyncEventHandler>();
                 Assert.Equal(0, handler.Events.Count);
@@ -40,7 +40,7 @@ namespace Autofac.Events.Tests
             {
                 var start = new StartEvent();
                 var stop = new StopEvent();
-                var pub = scope.Resolve<EventPublisher>();
+                var pub = scope.Resolve<IEventPublisher>();
                 var asyncHandler = scope.Resolve<InfrastructureAsyncEventHandler>();
                 Assert.Equal(0, asyncHandler.Events.Count);
                 pub.Publish(start);

@@ -58,3 +58,34 @@ Configuring the ContravariantRegistrationSource initially means that if we imple
 IHandleEvent<object>
 ```
 then we would get all events of any type.  You can also have your event types implement interfaces and subscribe to those interfaces.
+
+##Async Task methods
+There are also `Task` versions of `Publish` and `Handle` methods. The callbacks are run so that each awaits for the other to complete or throw independently. Task version of Handler interface has a single method,
+```csharp
+Task HandleAsync<TEvent>()
+```
+that you must implement. Publisher has additional method,
+```csharp
+Task PublishAsync(object @event); 
+```
+that is used to `Publish` events from `async` context. So you can do something like that:
+
+```csharp
+public class AsyncWorkListener : IHandleAsyncEvent<SomeMessage>
+{
+  public async Task HandleAsync(SomeMessage message)
+  {
+    //React to SomeMessage here
+	await DoSomeJobWithMessage(message);
+  }
+}
+```
+
+Publishing events can be done from async context too:
+```csharp
+public async Task DoWork()
+{
+	//... Do something
+	await _EventPublisher.PublishAsync(new SomeMessage { Text = "We did something" });
+}
+```
