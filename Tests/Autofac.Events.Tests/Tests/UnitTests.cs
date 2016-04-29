@@ -15,10 +15,11 @@ namespace Autofac.Events.Tests
             builder.RegisterSource(new ContravariantRegistrationSource());
             builder.RegisterEventing();
             builder.RegisterInstance(this).AsSelf().AsImplementedInterfaces();
-            builder.RegisterAssemblyTypes(typeof(IHandleEvent<>).Assembly, GetType().Assembly)
+            builder.RegisterAssemblyTypes(typeof(LifetimeScopeExtensions).Assembly, GetType().Assembly)
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
+
             if (additionalConfig != null)
                 additionalConfig(builder);
             return builder.Build();

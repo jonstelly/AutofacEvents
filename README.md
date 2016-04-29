@@ -36,10 +36,35 @@ public class WorkDoer
 }
 ```
 
-##Subscribing
-Subscribing is done by implementing the IHandleEvent<TEvent> interface.  The interface has a single method,
+###Async
+You can also publish events asynchronously as follows:
+
 ```csharp
-void Handle<TEvent>()
+public class SomeMessage
+{
+  public string Text { get; set; }
+}
+
+public class WorkDoer
+{
+  public WorkDoer(IAsyncEventPublisher eventPublisher)
+  {
+    _EventPublisher = eventPublisher;
+  }
+  private readonly IAsyncEventPublisher _EventPublisher;
+  
+  public async Task DoWorkAsync()
+  {
+    //... Do something
+    await _EventPublisher.PublishAsync(new SomeMessage { Text = "We did something" });
+  }
+}
+```
+
+##Subscribing
+Subscribing is done by implementing the `IHandleEvent<TEvent>` interface.  The interface has a single method,
+```csharp
+void Handle<TEvent>(TEvent @event)
 ```
 that you must implement.  You then simply have to register the subscriber with Autofac, ensuring you use AsImplementedInterfaces() and events will be published accordingly.
 
@@ -53,8 +78,53 @@ public class WorkListener : IHandleEvent<SomeMessage>
 }
 ```
 
-Configuring the ContravariantRegistrationSource initially means that if we implement
+###Async
+You can also handle events asynchronously by implementing `IHandleEventAsync<TEvent>`.  This interface also has a single method,
 ```csharp
-IHandleEvent<object>
+Task HandleAsync<TEvent>(TEvent @event)
 ```
-then we would get all events of any type.  You can also have your event types implement interfaces and subscribe to those interfaces.
+
+```csharp
+public class WorkListener : IHandleEventAsync<SomeMessage>
+{
+  public async Task HandleAsync(SomeMessage)
+  {
+    //React to SomeMessage here
+  }
+}
+```
+
+###Contravariance
+Configuring AutoFac's ContravariantRegistrationSource initially means that if we implement `IHandleEvent<object>` or `IHandleEventAsync<object>` then we would get all events of any type.  You can also have your event types implement interfaces and subscribe to those interfaces.
+
+##Async Task methods
+There are async interfaces and implementations for `IHandleEventAsync` and `IAsyncEventPublisher` as well as an Async extension method for `ILifetimeScope` called `PublishEventAsync`.
+
+```csharp
+Task HandleAsync<TEvent>()
+```
+that you must implement. Publisher has additional method,
+```csharp
+Task PublishAsync(object @event); 
+```
+that is used to `Publish` events from `async` context. So you can do something like that:
+
+```csharp
+public class AsyncWorkListener : IHandleAsyncEvent<SomeMessage>
+{
+  public async Task HandleAsync(SomeMessage message)
+  {
+    //React to SomeMessage here
+	await DoSomeJobWithMessage(message);
+  }
+}
+```
+
+Publishing events can be done from async context too:
+```csharp
+public async Task DoWork()
+{
+	//... Do something
+	await _EventPublisher.PublishAsync(new SomeMessage { Text = "We did something" });
+}
+```

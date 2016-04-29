@@ -25,6 +25,48 @@ namespace Autofac
                     exceptions.Add(exception);
                 }
             }
+            foreach(dynamic asyncHandler in scope.ResolveAsyncHandlers(@event))
+            {
+                try
+                {
+                    asyncHandler.HandleAsync((dynamic)@event).Wait();
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
+        }
+
+        public static async Task PublishEventAsync(this ILifetimeScope scope, object @event)
+        {
+            var exceptions = new List<Exception>();
+            //TODO: Investigate synchronous vs. synchronous handling here, ConfigureAwait()?  Seems problematic given reliance on scope
+            foreach (dynamic handler in scope.ResolveHandlers(@event))
+            {
+                try
+                {
+                    handler.Handle((dynamic)@event);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
+
+            foreach (dynamic asyncHandler in scope.ResolveAsyncHandlers(@event))
+            {
+                try
+                {
+                    await asyncHandler.HandleAsync((dynamic) @event);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
             if (exceptions.Count > 0)
                 throw new AggregateException(exceptions);
         }
@@ -32,23 +74,35 @@ namespace Autofac
         public static IEnumerable<dynamic> ResolveHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
         {
             var eventType = @event.GetType();
-            return scope.ResolveConcreteHandlers(eventType)
-                .Union(scope.ResolveInterfaceHandlers(eventType));
+            return scope.ResolveConcreteHandlers(eventType, MakeHandlerType)
+                .Union(scope.ResolveInterfaceHandlers(eventType, MakeHandlerType));
         }
 
-        private static IEnumerable<dynamic> ResolveConcreteHandlers(this ILifetimeScope scope, Type eventType)
+        public static IEnumerable<dynamic> ResolveAsyncHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
         {
-            return (IEnumerable<dynamic>)scope.Resolve(MakeHandlerType(eventType));
+            var eventType = @event.GetType();
+            return scope.ResolveConcreteHandlers(eventType, MakeAsyncHandlerType)
+                .Union(scope.ResolveInterfaceHandlers(eventType, MakeAsyncHandlerType));
+        }
+        
+        private static IEnumerable<dynamic> ResolveConcreteHandlers(this ILifetimeScope scope, Type eventType, Func<Type, Type> handlerFactory)
+        {
+            return (IEnumerable<dynamic>)scope.Resolve(handlerFactory(eventType));
         }
 
-        private static IEnumerable<dynamic> ResolveInterfaceHandlers(this ILifetimeScope scope, Type eventType)
+        private static IEnumerable<dynamic> ResolveInterfaceHandlers(this ILifetimeScope scope, Type eventType, Func<Type, Type> handlerFactory)
         {
-            return eventType.GetTypeInfo().ImplementedInterfaces.SelectMany(i => (IEnumerable<dynamic>)scope.Resolve(MakeHandlerType(i))).Distinct();
+            return eventType.GetTypeInfo().ImplementedInterfaces.SelectMany(i => (IEnumerable<dynamic>)scope.Resolve(handlerFactory(i))).Distinct();
         }
 
         private static Type MakeHandlerType(Type type)
         {
             return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleEvent<>).MakeGenericType(type));
+        }
+
+        private static Type MakeAsyncHandlerType(Type type)
+        {
+            return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleEventAsync<>).MakeGenericType(type));
         }
     }
 }

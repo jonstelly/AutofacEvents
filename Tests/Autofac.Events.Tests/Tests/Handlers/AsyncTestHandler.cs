@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Autofac.Events.Tests
+namespace Autofac.Events.Tests.Handlers
 {
-    public abstract class TestHandler<TEvent> : IHandleEvent<TEvent>
+    public abstract class AsyncTestHandler<TEvent> : IHandleEventAsync<TEvent>
     {
-        protected TestHandler()
+        protected AsyncTestHandler()
         {
             Events = new List<TEvent>();
         }
@@ -16,7 +16,7 @@ namespace Autofac.Events.Tests
         public List<TEvent> Events { get; private set; }
         public TEvent LastEvent { get { return Events.LastOrDefault(); } }
 
-        public void Handle(TEvent @event)
+        public async Task HandleAsync(TEvent @event)
         {
             Events.Add(@event);
         }

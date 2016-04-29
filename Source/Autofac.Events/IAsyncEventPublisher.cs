@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Autofac.Events
 {
     /// <summary>
-    /// Handle an event
+    /// Publishes an event asynchronously
     /// </summary>
-    /// <typeparam name="TEvent"></typeparam>
-    public interface IHandleEvent<in TEvent>
+    public interface IAsyncEventPublisher
     {
-        void Handle(TEvent @event);
+        Task PublishAsync(object @event);
     }
 }

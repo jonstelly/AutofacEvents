@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Autofac.Events
 {
-    public class EventPublisher : IEventPublisher
+    public class EventPublisher : IEventPublisher, IAsyncEventPublisher
     {
         public EventPublisher(ILifetimeScope scope)
         {
@@ -16,6 +17,11 @@ namespace Autofac.Events
         public void Publish(object @event)
         {
             _scope.PublishEvent(@event);
+        }
+
+        public Task PublishAsync(object @event)
+        {
+            return _scope.PublishEventAsync(@event);
         }
     }
 }
