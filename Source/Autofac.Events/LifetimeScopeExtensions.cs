@@ -25,7 +25,7 @@ namespace Autofac
                     exceptions.Add(exception);
                 }
             }
-            foreach(dynamic asyncHandler in scope.ResolveAsyncHandlers(@event))
+            foreach (dynamic asyncHandler in scope.ResolveAsyncHandlers(@event))
             {
                 try
                 {
@@ -37,7 +37,11 @@ namespace Autofac
                 }
             }
             if (exceptions.Count > 0)
-                throw new AggregateException(exceptions);
+            {
+                var exception = new AggregateException(exceptions);
+                HandleFailure(scope, exception);
+                throw exception;
+            }
         }
 
         public static async Task PublishEventAsync(this ILifetimeScope scope, object @event)
@@ -60,7 +64,7 @@ namespace Autofac
             {
                 try
                 {
-                    await asyncHandler.HandleAsync((dynamic) @event);
+                    await asyncHandler.HandleAsync((dynamic)@event);
                 }
                 catch (Exception exception)
                 {
@@ -68,7 +72,11 @@ namespace Autofac
                 }
             }
             if (exceptions.Count > 0)
-                throw new AggregateException(exceptions);
+            {
+                var exception = new AggregateException(exceptions);
+                HandleFailure(scope, exception);
+                throw exception;
+            }
         }
 
         public static IEnumerable<dynamic> ResolveHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
@@ -84,7 +92,7 @@ namespace Autofac
             return scope.ResolveConcreteHandlers(eventType, MakeAsyncHandlerType)
                 .Union(scope.ResolveInterfaceHandlers(eventType, MakeAsyncHandlerType));
         }
-        
+
         private static IEnumerable<dynamic> ResolveConcreteHandlers(this ILifetimeScope scope, Type eventType, Func<Type, Type> handlerFactory)
         {
             return (IEnumerable<dynamic>)scope.Resolve(handlerFactory(eventType));
@@ -103,6 +111,29 @@ namespace Autofac
         private static Type MakeAsyncHandlerType(Type type)
         {
             return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleEventAsync<>).MakeGenericType(type));
+        }
+
+        private static async Task HandleFailureAsync(ILifetimeScope scope, Exception exception)
+        {
+            if (scope == null || exception == null)
+                return;
+
+            IAsyncEventFailureHandler asyncFailureHandler;
+            bool asyncResolved = scope.TryResolve(out asyncFailureHandler);
+            if (asyncResolved)
+                await asyncFailureHandler.HandleFailure(scope, exception);
+        }
+
+        private static void HandleFailure(ILifetimeScope scope, Exception exception)
+        {
+            if (scope == null || exception == null)
+                return;
+
+            IEventFailureHandler failureHandler;
+
+            bool resolved = scope.TryResolve(out failureHandler);
+            if (resolved)
+                failureHandler.HandleFailure(scope, exception);
         }
     }
 }

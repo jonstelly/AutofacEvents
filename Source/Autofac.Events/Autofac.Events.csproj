@@ -41,7 +41,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BuilderExtensions.cs" />
+    <Compile Include="IAsyncEventFailureHandler.cs" />
     <Compile Include="IAsyncEventPublisher.cs" />
+    <Compile Include="IEventFailureHandler.cs" />
     <Compile Include="IHandleEventAsync.cs" />
     <Compile Include="LifetimeScopeExtensions.cs" />
     <Compile Include="IHandleEvent.cs" />

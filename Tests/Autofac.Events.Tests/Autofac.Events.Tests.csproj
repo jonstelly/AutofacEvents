@@ -61,8 +61,10 @@
     <Compile Include="Aggregate.cs" />
     <Compile Include="AggregateEvent.cs" />
     <Compile Include="AggregateSaved.cs" />
+    <Compile Include="AsyncEventFailureHandler.cs" />
     <Compile Include="DebugEvent.cs" />
     <Compile Include="Employee.cs" />
+    <Compile Include="EventFailureHandler.cs" />
     <Compile Include="InfrastructureEvent.cs" />
     <Compile Include="InfrastructureStateEvent.cs" />
     <Compile Include="LogEvent.cs" />
