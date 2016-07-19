@@ -5,22 +5,18 @@ namespace Autofac.Events
 {
     public class EventFailureHandler : IEventFailureHandler
     {
-        private readonly Action<ILifetimeScope, Exception> _verificationCallback;
 
-        public EventFailureHandler(Action<ILifetimeScope, Exception> verificationCallback)
-        {
-            if (verificationCallback == null)
-                throw new ArgumentNullException(nameof(verificationCallback));
-
-            _verificationCallback = verificationCallback;
-
-        }
         public void HandleFailure(ILifetimeScope scope, Exception exception)
         {
-            _verificationCallback(scope, exception);
             WasCalled = true;
+            Exception = exception;
+            Scope = scope;
         }
 
+        //Using properties as passing in a callback via the constructor 
+        //wasn't possible given the way the BeginScope registers all types in the assembly.
         public bool WasCalled { get; private set; }
+        public Exception Exception { get; private set; }
+        public ILifetimeScope Scope { get; private set; }
     }
 }

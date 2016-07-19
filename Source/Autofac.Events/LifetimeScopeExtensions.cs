@@ -74,7 +74,7 @@ namespace Autofac
             if (exceptions.Count > 0)
             {
                 var exception = new AggregateException(exceptions);
-                HandleFailure(scope, exception);
+                await HandleFailureAsync(scope, exception);
                 throw exception;
             }
         }

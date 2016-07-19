@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Autofac.Events.Tests.Handlers;
 using Xunit;
@@ -34,57 +31,43 @@ namespace Autofac.Events.Tests
         [Fact]
         public void FailureHandlerIsRegisteredAndThrowingHandlerThrowsAndAllHandlersAreCalled()
         {
-            var failureHandler = new EventFailureHandler((s, e) =>
-            {
-                Assert.NotNull(s);
-                Assert.IsType<AggregateException>(e);
-                var aggException = (AggregateException)e;
-                Assert.Equal(2, aggException.InnerExceptions.Count);
-            });
-
-            using (var scope = BeginScope(bldr => bldr.RegisterInstance(failureHandler).As<IEventFailureHandler>().InstancePerLifetimeScope()))
+            using (var scope = BeginScope())
             {
                 var thrower = scope.Resolve<ThrowingThrowEventHandler>();
                 var handler = scope.Resolve<NonThrowingThrowEventHandler>();
                 var exception = Assert.Throws<AggregateException>(() => scope.PublishEvent(new ThrowEvent()));
 
-                Assert.IsType<AggregateException>(exception);
-
                 Assert.Equal(1, handler.Events.Count);
                 Assert.True(thrower.ThrewException);
-                Assert.Equal(2, exception.InnerExceptions.Count);
-                Assert.True(exception.InnerExceptions[0].Message.StartsWith("Intentional error for "));
+                AssertException(exception);
+
+                var failureHandler = (EventFailureHandler)scope.Resolve<IEventFailureHandler>();
                 Assert.True(failureHandler.WasCalled);
+                Assert.Equal(failureHandler.Scope, scope);
+                AssertException(failureHandler.Exception);
             }
         }
 
         [Fact]
-        public void AsyncFailureHandlerIsRegisteredAndThrowingHandlerThrowsAndAllHandlersAreCalled()
+        public async Task AsyncFailureHandlerIsRegisteredAndThrowingHandlerThrowsAndAllHandlersAreCalled()
         {
-            var failureHandler = new AsyncEventFailureHandler((s, e) =>
-            {
-                Assert.NotNull(s);
-                Assert.IsType<AggregateException>(e);
-                var aggException = (AggregateException)e;
-                Assert.Equal(2, aggException.InnerExceptions.Count);
-            });
-
-            using (var scope = BeginScope(bldr => bldr.RegisterInstance(failureHandler).As<IAsyncEventFailureHandler>().InstancePerLifetimeScope()))
+            using (var scope = BeginScope())
             {
                 var thrower = scope.Resolve<ThrowingThrowEventHandler>();
                 var handler = scope.Resolve<NonThrowingThrowEventHandler>();
-                var exception = Assert.Throws<AggregateException>(() => scope.PublishEvent(new ThrowEvent()));
-
-                Assert.IsType<AggregateException>(exception);
+                var exception = await Assert.ThrowsAsync<AggregateException>(() => scope.PublishEventAsync(new ThrowEvent()));
 
                 Assert.Equal(1, handler.Events.Count);
                 Assert.True(thrower.ThrewException);
-                Assert.Equal(2, exception.InnerExceptions.Count);
-                Assert.True(exception.InnerExceptions[0].Message.StartsWith("Intentional error for "));
+                AssertException(exception);
+
+
+                var failureHandler = (AsyncEventFailureHandler)scope.Resolve<IAsyncEventFailureHandler>();
                 Assert.True(failureHandler.WasCalled);
+                Assert.Equal(failureHandler.Scope, scope);
+                AssertException(failureHandler.Exception);
             }
         }
-
 
         [Fact]
         public void ThrowingHandlerThrowsAndAllHandlersAreCalled()
@@ -96,8 +79,7 @@ namespace Autofac.Events.Tests
                 var exception = Assert.Throws<AggregateException>(() => scope.PublishEvent(new ThrowEvent()));
                 Assert.Equal(1, handler.Events.Count);
                 Assert.True(thrower.ThrewException);
-                Assert.Equal(2, exception.InnerExceptions.Count);
-                Assert.True(exception.InnerExceptions[0].Message.StartsWith("Intentional error for "));
+                AssertException(exception);
             }
         }
 
@@ -132,9 +114,16 @@ namespace Autofac.Events.Tests
                 var exception = Assert.Throws<AggregateException>(() => scope.PublishEvent(new ThrowEvent()));
                 Assert.Equal(1, handler.Events.Count);
                 Assert.True(thrower.ThrewException);
-                Assert.Equal(2, exception.InnerExceptions.Count);
-                Assert.True(exception.InnerExceptions[0].Message.StartsWith("Intentional error for "));
+                AssertException(exception);
             }
+        }
+
+        private void AssertException(Exception exception)
+        {
+            Assert.IsType<AggregateException>(exception);
+            var aggException = (AggregateException)exception;
+            Assert.Equal(2, aggException.InnerExceptions.Count);
+            Assert.True(aggException.InnerExceptions[0].Message.StartsWith("Intentional error for "));
         }
     }
 }
