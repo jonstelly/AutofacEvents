@@ -74,7 +74,7 @@ namespace Autofac
             if (exceptions.Count > 0)
             {
                 var exception = new AggregateException(exceptions);
-                await HandleFailureAsync(scope, exception);
+                HandleFailure(scope, exception);
                 throw exception;
             }
         }
@@ -112,18 +112,7 @@ namespace Autofac
         {
             return typeof(IEnumerable<>).MakeGenericType(typeof(IHandleEventAsync<>).MakeGenericType(type));
         }
-
-        private static async Task HandleFailureAsync(ILifetimeScope scope, Exception exception)
-        {
-            if (scope == null || exception == null)
-                return;
-
-            IAsyncEventFailureHandler asyncFailureHandler;
-            bool asyncResolved = scope.TryResolve(out asyncFailureHandler);
-            if (asyncResolved)
-                await asyncFailureHandler.HandleFailure(scope, exception);
-        }
-
+        
         private static void HandleFailure(ILifetimeScope scope, Exception exception)
         {
             if (scope == null || exception == null)
@@ -134,6 +123,11 @@ namespace Autofac
             bool resolved = scope.TryResolve(out failureHandler);
             if (resolved)
                 failureHandler.HandleFailure(scope, exception);
+
+            IAsyncEventFailureHandler asyncFailureHandler;
+            bool asyncResolved = scope.TryResolve(out asyncFailureHandler);
+            if (asyncResolved)
+                asyncFailureHandler.HandleFailure(scope, exception);//non-blocking call
         }
     }
 }

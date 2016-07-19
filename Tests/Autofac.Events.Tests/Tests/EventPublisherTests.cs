@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Events.Tests.Handlers;
 using Xunit;
@@ -45,6 +46,11 @@ namespace Autofac.Events.Tests
                 Assert.True(failureHandler.WasCalled);
                 Assert.Equal(failureHandler.Scope, scope);
                 AssertException(failureHandler.Exception);
+
+                var asyncFailureHandler = (AsyncEventFailureHandler)scope.Resolve<IAsyncEventFailureHandler>();
+                Assert.True(asyncFailureHandler.WasCalled);
+                Assert.Equal(asyncFailureHandler.Scope, scope);
+                AssertException(asyncFailureHandler.Exception);
             }
         }
 
@@ -62,7 +68,12 @@ namespace Autofac.Events.Tests
                 AssertException(exception);
 
 
-                var failureHandler = (AsyncEventFailureHandler)scope.Resolve<IAsyncEventFailureHandler>();
+                var asyncFailureHandler = (AsyncEventFailureHandler)scope.Resolve<IAsyncEventFailureHandler>();
+                Assert.True(asyncFailureHandler.WasCalled);
+                Assert.Equal(asyncFailureHandler.Scope, scope);
+                AssertException(asyncFailureHandler.Exception);
+
+                var failureHandler = (EventFailureHandler)scope.Resolve<IEventFailureHandler>();
                 Assert.True(failureHandler.WasCalled);
                 Assert.Equal(failureHandler.Scope, scope);
                 AssertException(failureHandler.Exception);
