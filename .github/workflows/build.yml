@@ -18,7 +18,7 @@ jobs:
       # with:
       #   args: "'> .gitversion.json'"
     - name: Dump Git Version
-      run: echo ${{ gitversion.outputs }}
+      run: echo ${{ steps.gitversion.outputs }}
     # - name: Dump Git Version
     #   run:  cat ./.gitversion.json
       #run: jq .NuGetVersionV2 ./.gitversion.json
@@ -31,7 +31,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Pack
-      run: dotnet pack --configuration Release -p:Version=${{ gitversion.outputs.FullSemVer }} -o "./packages"
+      run: dotnet pack --configuration Release -p:Version=${{ steps.gitversion.outputs.FullSemVer }} -o "./packages"
     - name: Publish
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
