@@ -18,7 +18,7 @@ jobs:
       # with:
       #   args: "'> .gitversion.json'"
     - name: Dump Git Version
-      run: echo ${{ steps.gitversion.outputs }}
+      run: echo ${{ steps.gitversion }}
     # - name: Dump Git Version
     #   run:  cat ./.gitversion.json
       #run: jq .NuGetVersionV2 ./.gitversion.json
