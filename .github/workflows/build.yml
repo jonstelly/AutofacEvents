@@ -18,13 +18,7 @@ jobs:
         args: "> .gitversion.json"
     - name: Dump Git Version
       run: cat ./.gitversion.json
-    - name: Set Git Version
-      run: echo "::set-output name=gitversion::$(cat ./.gitversion.json)"
-    - name: Dump Git Version
-      run: echo "::warning::${{ toJSON(gitversion) }}"
       #run: jq .NuGetVersionV2 ./.gitversion.json
-    #- name: Dump Full Semantic Version
-    #  run: echo ${{ gitversion.FullSemVer }}
     - name: Setup .NET Core
       uses: actions/setup-dotnet@master
       with:
@@ -34,7 +28,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Pack
-      run: dotnet pack --configuration Release -p:Version=${{ gitversion.FullSemVer }} -o "./packages"
+      run: dotnet pack --configuration Release -p:Version=$(cat ./.gitversion.json | jq .FullSemVer) -o "./packages"
     - name: Publish
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
