@@ -21,6 +21,7 @@ bld/
 *.ide/
 .vs/
 .idea/
+.gitversion.json
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

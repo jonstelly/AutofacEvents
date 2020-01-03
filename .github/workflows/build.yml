@@ -2,11 +2,31 @@ name: Autofac Events Build
 
 on: [push]
 
+#dotnet /app/GitVersion.dll > .gitversion.json
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1    
+    - uses: actions/checkout@v1
+        - run: |
+        git fetch --tags
+        git branch --create-reflog master origin/master
+    - name: Get Git Version
+      uses: docker://gittools/gitversion@latest      
+      with:
+        args: "> .gitversion.json"
+    - name: Dump Git Version
+      run: cat ./.gitversion.json
+    - name: Set Git Version
+      run: echo "::set-output name=gitversion=$(cat ./.gitversion.json)"
+    - name: Dump Short Sha
+      run: echo ${{ gitversion.ShortSha }}
+      #run: jq .NuGetVersionV2 ./.gitversion.json
+    - name: Dump Full Semantic Version
+      run: echo ${{ gitversion.FullSemVer }}
+      #run: jq .FullSemVer ./.gitversion.json
     - name: Setup .NET Core
       uses: actions/setup-dotnet@master
       with:
@@ -16,7 +36,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Pack
-      run: dotnet pack --configuration Release --version-suffix action-testing -o "./packages"
+      run: dotnet pack --configuration Release -p:Version=${{ gitversion.FullSemVer }} -o "./packages"
     - name: Publish
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
