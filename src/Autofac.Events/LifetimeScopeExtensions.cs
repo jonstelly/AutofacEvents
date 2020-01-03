@@ -13,23 +13,42 @@ namespace Autofac
     {
         public static void PublishEvent(this ILifetimeScope scope, object @event)
         {
+            if (@event == null)
+                return;
+
             var exceptions = new List<Exception>();
-            foreach (dynamic handler in scope.ResolveHandlers(@event))
+            var handleMethod = typeof(IHandleEvent<>).MakeGenericType(@event.GetType()).GetMethod("Handle");
+            var handleAsyncMethod = typeof(IHandleEventAsync<>).MakeGenericType(@event.GetType()).GetMethod("HandleAsync");
+
+            foreach (var handler in scope.ResolveHandlers(@event))
             {
                 try
                 {
-                    handler.Handle((dynamic)@event);
+                    //Invoke sync handler
+                    handleMethod.Invoke(handler, new[] {@event});
+                }
+                catch (TargetInvocationException ti)
+                {
+                    //Unwrap TargetInvocationException
+                    exceptions.Add(ti.InnerException ?? ti);
                 }
                 catch (Exception exception)
                 {
                     exceptions.Add(exception);
                 }
             }
-            foreach(dynamic asyncHandler in scope.ResolveAsyncHandlers(@event))
+            foreach (var asyncHandler in scope.ResolveAsyncHandlers(@event))
             {
                 try
                 {
-                    asyncHandler.HandleAsync((dynamic)@event).Wait();
+                    //Invoke async handler
+                    var task = (Task)handleAsyncMethod.Invoke(asyncHandler, new[] { @event });
+                    task.GetAwaiter().GetResult();
+                }
+                catch (TargetInvocationException ti)
+                {
+                    //Unwrap TargetInvocationException
+                    exceptions.Add(ti.InnerException ?? ti);
                 }
                 catch (Exception exception)
                 {
@@ -42,13 +61,25 @@ namespace Autofac
 
         public static async Task PublishEventAsync(this ILifetimeScope scope, object @event)
         {
+            if (@event == null)
+                return;
+
             var exceptions = new List<Exception>();
             //TODO: Investigate synchronous vs. synchronous handling here, ConfigureAwait()?  Seems problematic given reliance on scope
-            foreach (dynamic handler in scope.ResolveHandlers(@event))
+            var handleMethod = typeof(IHandleEvent<>).MakeGenericType(@event.GetType()).GetMethod("Handle");
+            var handleAsyncMethod = typeof(IHandleEventAsync<>).MakeGenericType(@event.GetType()).GetMethod("HandleAsync");
+
+            foreach (var handler in scope.ResolveHandlers(@event))
             {
                 try
                 {
-                    handler.Handle((dynamic)@event);
+                    //Invoke sync handler
+                    handleMethod.Invoke(handler, new[] { @event });
+                }
+                catch (TargetInvocationException ti)
+                {
+                    //Unwrap TargetInvocationException
+                    exceptions.Add(ti.InnerException ?? ti);
                 }
                 catch (Exception exception)
                 {
@@ -56,11 +87,18 @@ namespace Autofac
                 }
             }
 
-            foreach (dynamic asyncHandler in scope.ResolveAsyncHandlers(@event))
+            foreach (var asyncHandler in scope.ResolveAsyncHandlers(@event))
             {
                 try
                 {
-                    await asyncHandler.HandleAsync((dynamic) @event);
+                    //Invoke async handler
+                    var task = (Task)handleAsyncMethod.Invoke(asyncHandler, new[] { @event });
+                    await task;
+                }
+                catch (TargetInvocationException ti)
+                {
+                    //Unwrap TargetInvocationException
+                    exceptions.Add(ti.InnerException ?? ti);
                 }
                 catch (Exception exception)
                 {
@@ -71,26 +109,26 @@ namespace Autofac
                 throw new AggregateException(exceptions);
         }
 
-        public static IEnumerable<dynamic> ResolveHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
+        public static IEnumerable<object> ResolveHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
         {
             var eventType = @event.GetType();
             return scope.ResolveConcreteHandlers(eventType, MakeHandlerType)
                 .Union(scope.ResolveInterfaceHandlers(eventType, MakeHandlerType));
         }
 
-        public static IEnumerable<dynamic> ResolveAsyncHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
+        public static IEnumerable<object> ResolveAsyncHandlers<TEvent>(this ILifetimeScope scope, TEvent @event)
         {
             var eventType = @event.GetType();
             return scope.ResolveConcreteHandlers(eventType, MakeAsyncHandlerType)
                 .Union(scope.ResolveInterfaceHandlers(eventType, MakeAsyncHandlerType));
         }
-        
-        private static IEnumerable<dynamic> ResolveConcreteHandlers(this ILifetimeScope scope, Type eventType, Func<Type, Type> handlerFactory)
+
+        private static IEnumerable<object> ResolveConcreteHandlers(this ILifetimeScope scope, Type eventType, Func<Type, Type> handlerFactory)
         {
             return (IEnumerable<dynamic>)scope.Resolve(handlerFactory(eventType));
         }
 
-        private static IEnumerable<dynamic> ResolveInterfaceHandlers(this ILifetimeScope scope, Type eventType, Func<Type, Type> handlerFactory)
+        private static IEnumerable<object> ResolveInterfaceHandlers(this ILifetimeScope scope, Type eventType, Func<Type, Type> handlerFactory)
         {
             return eventType.GetTypeInfo().ImplementedInterfaces.SelectMany(i => (IEnumerable<dynamic>)scope.Resolve(handlerFactory(i))).Distinct();
         }

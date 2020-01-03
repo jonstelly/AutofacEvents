@@ -2,7 +2,12 @@ AutofacEvents
 =============
 AutofacEvents is an event pub/sub extension for Autofac.  Primary usage is to publish domain events between classes, where subscribing to the events is as easy as implementing an interface in any interested classes and ensuring that they are registered with Autofac.  A nuget package is available as [Autofac.Events](http://www.nuget.org/packages/Autofac.Events/).
 
-##Configuration
+## Status
+![](https://github.com/jonstelly/AutofacEvents/workflows/Autofac%20Events%20Build/badge.svg?branch=master)
+
+
+## Configuration
+
 During your normal autofac configuration, register the ContravariantRegistrationSource, and call RegisterEventing().
 
 ```csharp
@@ -11,7 +16,7 @@ builder.RegisterSource(new ContravariantRegistrationSource());
 builder.RegisterEventing();
 ```
 
-##Publishing
+## Publishing
 There are two options for publishing.  Option one is to call the PublishEvent() extension method off of ILifetimeScope.  For those that would prefer not to have to add a dependency to ILifetimeScope to publish, there's also an IEventPublisher interface that has a simple Publish method.  Personally I prefer to use the IEventPublisher because a dependency on the IEventPublisher makes it clear what your class intends to use the dependency for, while a dependency on ILifetimeScope is less clear.
 
 ```csharp

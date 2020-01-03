@@ -12,8 +12,8 @@ namespace Autofac.Events.Tests.Handlers
             Events = new List<TEvent>();
         }
 
-        public List<TEvent> Events { get; private set; }
-        public TEvent LastEvent { get { return Events.LastOrDefault(); } }
+        public List<TEvent> Events { get; }
+        public TEvent LastEvent => Events.LastOrDefault();
 
         public void Handle(TEvent @event)
         {
