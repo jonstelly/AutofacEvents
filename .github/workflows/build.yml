@@ -11,14 +11,17 @@ jobs:
     - run: |
         git fetch --prune --unshallow
     - name: Get Git Version
-      id: getgit
+      id: git
       uses: docker://gittools/gitversion:latest
+      with:
+        args: ./gitversion.sh
+        entrypoint: bash
       # with:
       #   args: "/github/workspace > /github/workspace/.gitversion.json"
     - name: Dump Steps
       run: echo "::warning::${{ toJSON(steps) }}"
     - name: Dump Get Git
-      run:  echo "::warning::${{ toJSON(steps.getgit) }}"
+      run:  echo "::warning::${{ toJSON(steps.git) }}"
       #run: jq .NuGetVersionV2 ./.gitversion.json
     # - name: Set Git Version
     #   id: gitversion
