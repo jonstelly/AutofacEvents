@@ -13,7 +13,7 @@ jobs:
     - name: Get Git Version
       uses: docker://gittools/gitversion:latest
       with:
-        args: "'> .gitversion.json'"
+        args: "/github/workspace > .gitversion.json"
     - name: Dump Git Version
       run:  cat ./.gitversion.json
       #run: jq .NuGetVersionV2 ./.gitversion.json
