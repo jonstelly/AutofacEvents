@@ -20,12 +20,11 @@ jobs:
       run: cat ./.gitversion.json
     - name: Set Git Version
       run: echo "::set-output name=gitversion::$(cat ./.gitversion.json)"
-    - name: Dump Short Sha
-      run: echo ${{ gitversion.ShortSha }}
+    - name: Dump Git Version
+      run: echo "::warning::${{ toJSON(gitversion) }}"
       #run: jq .NuGetVersionV2 ./.gitversion.json
-    - name: Dump Full Semantic Version
-      run: echo ${{ gitversion.FullSemVer }}
-      #run: jq .FullSemVer ./.gitversion.json
+    #- name: Dump Full Semantic Version
+    #  run: echo ${{ gitversion.FullSemVer }}
     - name: Setup .NET Core
       uses: actions/setup-dotnet@master
       with:
