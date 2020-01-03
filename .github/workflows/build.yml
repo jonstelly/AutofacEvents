@@ -11,15 +11,18 @@ jobs:
     - run: |
         git fetch --prune --unshallow
     - name: Get Git Version
+      id: getgit
       uses: docker://gittools/gitversion:latest
-      with:
-        args: "/github/workspace > /github/workspace/.gitversion.json"
-    - name: Dump Git Version
-      run:  cat ./.gitversion.json
+      # with:
+      #   args: "/github/workspace > /github/workspace/.gitversion.json"
+    - name: Dump Steps
+      run: echo "::warning::${{ toJSON(steps) }}"
+    - name: Dump Get Git
+      run:  echo "::warning::${{ toJSON(steps.getgit) }}"
       #run: jq .NuGetVersionV2 ./.gitversion.json
-    - name: Set Git Version
-      id: gitversion
-      run: echo "::set-output name=value::$(cat ./.gitversion.json)"
+    # - name: Set Git Version
+    #   id: gitversion
+    #   run: echo "::set-output name=value::$(cat ./.gitversion.json)"
     - name: Dump Steps
       run: echo "::warning::${{ toJSON(steps) }}"
     - name: Setup .NET Core
@@ -31,7 +34,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Pack
-      run: dotnet pack --configuration Release -p:Version=${{ steps.gitversion.outputs.FullSemVer }} -o "./packages"
+      run: dotnet pack --configuration Release -p:Version=${{ steps.getgit.outputs.FullSemVer }} -o "./packages"
     - name: Publish
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
