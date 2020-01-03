@@ -20,8 +20,7 @@ namespace Autofac.Events.Tests
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            if (additionalConfig != null)
-                additionalConfig(builder);
+            additionalConfig?.Invoke(builder);
             return builder.Build();
         }
     }

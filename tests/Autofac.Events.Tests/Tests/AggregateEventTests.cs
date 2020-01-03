@@ -16,11 +16,13 @@ namespace Autofac.Events.Tests
             using(var scope= BeginScope())
             {
                 var @event = new AggregateSaved<Aggregate>(new Person());
+                
                 scope.PublishEvent(@event);
-                var aggregateEventHandler = scope.Resolve<AggregateEventHandler>();
-                var aggregateSavedHandler = scope.Resolve<AggregateSavedHandler>();
-                Assert.NotNull(aggregateEventHandler.LastEvent);
-                Assert.NotNull(aggregateSavedHandler.LastEvent);
+                
+                var eventHandlerEvent = Assert.Single(scope.Resolve<AggregateEventHandler>().Events);
+                var savedHandlerEvent = Assert.Single(scope.Resolve<AggregateSavedHandler>().Events);
+                Assert.Equal(@event, eventHandlerEvent);
+                Assert.Equal(@event, savedHandlerEvent);
             }
         }
 
@@ -30,15 +32,13 @@ namespace Autofac.Events.Tests
             using (var scope = BeginScope())
             {
                 var @event = new AggregateSaved<Person>(new Person());
+
                 scope.PublishEvent(@event);
-                var aggregateEvent = scope.Resolve<AggregateEventHandler>();
-                var aggregateSaved = scope.Resolve<AggregateSavedHandler>();
-                var personEvent = scope.Resolve<PersonEventHandler>();
-                var personSaved = scope.Resolve<PersonSavedHandler>();
-                Assert.Null(aggregateEvent.LastEvent);
-                Assert.Null(aggregateSaved.LastEvent);
-                Assert.NotNull(personEvent.LastEvent);
-                Assert.NotNull(personSaved.LastEvent);
+
+                Assert.Null(scope.Resolve<AggregateEventHandler>().LastEvent);
+                Assert.Null(scope.Resolve<AggregateSavedHandler>().LastEvent);
+                Assert.Equal(@event, scope.Resolve<PersonEventHandler>().LastEvent);
+                Assert.Equal(@event, scope.Resolve<PersonSavedHandler>().LastEvent);
             }
         }
 

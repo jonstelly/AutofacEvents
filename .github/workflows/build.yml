@@ -1,0 +1,35 @@
+name: Autofac Events Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        git fetch --prune --unshallow
+    - name: Get Git Version
+      uses: docker://gittools/gitversion:latest
+      with:
+        entrypoint: bash
+        args: ./gitversion.sh
+    - name: Set Git Variables
+      id: git
+      run: |
+        echo "::set-output name=shortsha::$(cat ./.gitversion.json | jq .ShortSha)"
+        echo "::set-output name=fullsemver::$(cat ./.gitversion.json | jq .FullSemVer)"
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@master
+      with:
+        dotnet-version: 3.1.100
+    # - name: Debug Dump
+    #   run: echo "::warning::${{ toJSON(github) }}"
+    - name: Build
+      run: dotnet build --configuration Release
+    - name: Pack
+      run: dotnet pack --configuration Release -p:Version=${{ steps.git.outputs.fullsemver }} -o "./packages"
+    - name: Publish
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
+      run: dotnet nuget push -s https://www.nuget.org/api/v2/package -k $NUGET_AUTH_TOKEN ./packages/*.nupkg
