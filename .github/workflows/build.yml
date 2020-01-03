@@ -13,8 +13,8 @@ jobs:
     - name: Get Git Version
       uses: docker://gittools/gitversion:latest
       with:
-        args: ./gitversion.sh
         entrypoint: bash
+        args: ./gitversion.sh
     - name: Set Git Variables
       id: git
       run: |
