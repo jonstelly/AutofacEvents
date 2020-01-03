@@ -11,13 +11,15 @@ jobs:
     - run: |
         git fetch --prune --unshallow
     - name: Get Git Version
-      id: git
       uses: docker://gittools/gitversion:latest
       with:
         args: ./gitversion.sh
         entrypoint: bash
-      # with:
-      #   args: "/github/workspace > /github/workspace/.gitversion.json"
+    - name: Set Git Variables
+      id: git
+      run: |
+        echo "::set-output name=shortsha::$(cat ./.gitversion.json | jq .ShortSha)"
+        echo "::set-output name=fullsemver::$(cat ./.gitversion.json | jq .FullSemVer)"
     - name: Dump Steps
       run: echo "::warning::${{ toJSON(steps) }}"
     - name: Dump Get Git
@@ -37,7 +39,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Pack
-      run: dotnet pack --configuration Release -p:Version=${{ steps.getgit.outputs.FullSemVer }} -o "./packages"
+      run: dotnet pack --configuration Release -p:Version=${{ steps.git.outputs.fullsemver }} -o "./packages"
     - name: Publish
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
