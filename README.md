@@ -41,7 +41,7 @@ public class WorkDoer
 }
 ```
 
-###Async
+### Async
 You can also publish events asynchronously as follows:
 
 ```csharp
@@ -66,7 +66,7 @@ public class WorkDoer
 }
 ```
 
-##Subscribing
+## Subscribing
 Subscribing is done by implementing the `IHandleEvent<TEvent>` interface.  The interface has a single method,
 ```csharp
 void Handle<TEvent>(TEvent @event)
@@ -83,7 +83,7 @@ public class WorkListener : IHandleEvent<SomeMessage>
 }
 ```
 
-###Async
+### Async
 You can also handle events asynchronously by implementing `IHandleEventAsync<TEvent>`.  This interface also has a single method,
 ```csharp
 Task HandleAsync<TEvent>(TEvent @event)
@@ -99,5 +99,5 @@ public class WorkListener : IHandleEventAsync<SomeMessage>
 }
 ```
 
-###Contravariance
+## Contravariance
 Configuring AutoFac's ContravariantRegistrationSource initially means that if we implement `IHandleEvent<object>` or `IHandleEventAsync<object>` then we would get all events of any type.  You can also have your event types implement interfaces and subscribe to those interfaces.
