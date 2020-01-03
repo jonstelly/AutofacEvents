@@ -19,7 +19,7 @@ jobs:
     - name: Dump Git Version
       run: cat ./.gitversion.json
     - name: Set Git Version
-      run: echo "::set-output name=gitversion=$(cat ./.gitversion.json)"
+      run: echo "::set-output name=gitversion::$(cat ./.gitversion.json)"
     - name: Dump Short Sha
       run: echo ${{ gitversion.ShortSha }}
       #run: jq .NuGetVersionV2 ./.gitversion.json
