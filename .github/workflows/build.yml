@@ -13,7 +13,7 @@ jobs:
     - run: |
         git fetch --prune --unshallow
     - name: Get Git Version
-      uses: docker://gittools/gitversion@latest      
+      uses: docker://gittools/gitversion:latest      
       with:
         args: "> .gitversion.json"
     - name: Dump Git Version
