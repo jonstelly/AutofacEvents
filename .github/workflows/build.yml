@@ -3,8 +3,6 @@ name: Autofac Events Build
 on: [push]
 
 #dotnet /app/GitVersion.dll > .gitversion.json
-
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,18 +10,18 @@ jobs:
     - uses: actions/checkout@v2
     - run: |
         git fetch --prune --unshallow
-    - name: Dump Git Version
-      run: echo "::warning::${{ toJSON(job) }}"
     - name: Get Git Version
-      id: gitversion
-      uses: docker://gittools/gitversion:latest      
-      # with:
-      #   args: "'> .gitversion.json'"
+      uses: docker://gittools/gitversion:latest
+      with:
+        args: "'> .gitversion.json'"
     - name: Dump Git Version
-      run: echo "::warning::${{ toJSON(job) }}"
-    # - name: Dump Git Version
-    #   run:  cat ./.gitversion.json
+      run:  cat ./.gitversion.json
       #run: jq .NuGetVersionV2 ./.gitversion.json
+    - name: Set Git Version
+      id: gitversion
+      run: echo "::set-output name=value::$(cat ./.gitversion.json)"
+    - name: Dump Steps
+      run: echo "::warning::${{ toJSON(steps) }}"
     - name: Setup .NET Core
       uses: actions/setup-dotnet@master
       with:
