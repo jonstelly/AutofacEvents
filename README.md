@@ -3,8 +3,8 @@ AutofacEvents
 AutofacEvents is an event pub/sub extension for Autofac.  Primary usage is to publish domain events between classes, where subscribing to the events is as easy as implementing an interface in any interested classes and ensuring that they are registered with Autofac.  A nuget package is available as [Autofac.Events](http://www.nuget.org/packages/Autofac.Events/).
 
 ## Status
-![](https://github.com/jonstelly/AutofacEvents/workflows/Autofac%20Events%20Build/badge.svg?branch=master)
-
+![Nuget](https://img.shields.io/nuget/v/autofac.events)
+![Master](https://github.com/jonstelly/AutofacEvents/workflows/Build/badge.svg?branch=master)
 
 ## Configuration
 

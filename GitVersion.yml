@@ -1,7 +1,22 @@
 assembly-versioning-scheme: MajorMinor
-mode: ContinuousDelivery
-#next-version: 0.2.0
-branches: {}
+mode: ContinuousDeployment
+branches:
+  # Beta builds come from devleop branch
+  develop:
+    tag: beta
+    increment: Patch
+  # Releases builds from branch name like: 'release/major.minor.patch'
+  release:
+    regex: ^releases?[/-]
+    mode: ContinuousDelivery
+    tag: ''
+    is-release-branch: true
+  # We build/publish out of release branches, but this makes builds from master produce the same versioning after a release is merged to master
+  master:
+    regex: ^master
+    mode: ContinuousDelivery
+    tag: ''
+    is-release-branch: true
 ignore:
   sha: []
 merge-message-formats: {}
