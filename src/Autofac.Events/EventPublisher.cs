@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Autofac.Events
 {
-    public class EventPublisher : IEventPublisher, IAsyncEventPublisher
+    public sealed class EventPublisher : IEventPublisher, IAsyncEventPublisher
     {
         public EventPublisher(ILifetimeScope scope)
         {
